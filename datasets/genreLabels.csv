@@ -1,24 +1,20 @@
 genre,label
 Action,0
-Adventure,1
-Animation,2
-Aniplex,3
-Carousel Productions,4
-Comedy,5
-Crime,6
-Documentary,7
-Drama,8
-Family,9
-Fantasy,10
-Foreign,11
-History,12
-Horror,13
-Music,14
-Mystery,15
-Odyssey Media,16
-Romance,17
-Science Fiction,18
-TV Movie,19
-Thriller,20
-War,21
-Western,22
+Crime,1
+Fantasy,2
+Horror,3
+Romance,4
+History,5
+Documentary,6
+Adventure,7
+War,8
+Foreign,9
+Drama,10
+Thriller,11
+Music,12
+Animation,13
+Western,14
+Comedy,15
+Science Fiction,16
+Family,17
+Mystery,18
