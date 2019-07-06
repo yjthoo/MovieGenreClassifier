@@ -96,6 +96,9 @@ In this section, we will cover how to install [anaconda](https://www.anaconda.co
 
 In addition to the libraries listed above, you will need to download the following datasets:
 
+* The movies_metadata.csv file from the [movies dataset on kaggle](https://www.kaggle.com/rounakbanik/the-movies-dataset#movies_metadata.csv) and put it in the `datasets` folder
+* [GloVe (Global Vectors for Word Representation) dataset](https://nlp.stanford.edu/projects/glove/): glove.6B.zip and extract its contents inside of the `datasets` folder
+
 
 ## Running the program
 
@@ -103,4 +106,10 @@ In addition to the libraries listed above, you will need to download the followi
 
 ## Modifying the program
 
-To open the notebooks used to preprocess the data and test each stage of the program, you will need to ensure that your virtual environment is active when opening Jupyter Notebook
+### Adding data or changing the preprocessing
+
+To open the notebooks used to preprocess the data and test each stage of the program, you will need to ensure that your virtual environment is active when opening Jupyter Notebook. To do this, open Anaconda Navigator and swtich to the correct environment at the top of the window:
+
+![alt text](images/anacondaNav.png "Anaconda Navigator environment")
+
+### Training the model
