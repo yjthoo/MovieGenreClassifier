@@ -19,6 +19,8 @@ np.random.seed(1)
 
 
 def read_glove_vecs_only_alpha(glove_file):
+
+	# Adapted from Deep Learning Specialization by deeplearning.ai: https://www.coursera.org/specializations/deep-learning?
     
     with open(glove_file, 'r',encoding='utf8') as f:
         words = set()
@@ -46,6 +48,9 @@ def read_glove_vecs_only_alpha(glove_file):
 
 def sentences_to_indices(X, word_to_index, max_len):
     """
+
+	Adapted from Deep Learning Specialization by deeplearning.ai: https://www.coursera.org/specializations/deep-learning?  
+
     Converts an array of sentences (strings) into an array of indices corresponding to words in the sentences.
     The output shape should be such that it can betest = pd.read_csv('datasets/genreLabels.csv') given to `Embedding()` 
     
@@ -91,6 +96,9 @@ def sentences_to_indices(X, word_to_index, max_len):
 
 def pretrained_embedding_layer(word_to_vec_map, word_to_index):
     """
+	
+	Adapted from Deep Learning Specialization by deeplearning.ai: https://www.coursera.org/specializations/deep-learning?
+
     Creates a Keras Embedding() layer and loads in pre-trained GloVe 100-dimensional vectors.
     
     Arguments:
@@ -126,7 +134,7 @@ def pretrained_embedding_layer(word_to_vec_map, word_to_index):
     return embedding_layer
 
 
-def GenreClassifierV2(input_shape, word_to_vec_map, word_to_index, nbClasses):
+def GenreClassifierV2(input_shape, word_to_vec_map, word_to_index, nbClasses, dropout_rate = 0.2):
     """
     Function creating the graph of the model
     
@@ -161,7 +169,7 @@ def GenreClassifierV2(input_shape, word_to_vec_map, word_to_index, nbClasses):
     X = LSTM(100, return_sequences = False)(X)
 
     # Add dropout with a probability of 0.5
-    X = Dropout(0.2)(X)
+    X = Dropout(dropout_rate)(X)
     
     # Propagate X through a Dense layer with softmax activation to get back a batch of 23-dimensional vectors.
     X = Dense(nbClasses)(X)
@@ -258,43 +266,30 @@ def plot_model_history(model_history, fig_name):
 
 
 def trainModelV2(X_train_indices, Y_train_oh, word_to_vec_map, word_to_index, max_length, summary = False, 
-               dropout_rate = 0.5, batch_size = 32, epochs = 50, loss ='categorical_crossentropy', 
+               dropout_rate = 0.2, batch_size = 32, epochs = 50, loss ='categorical_crossentropy', 
                optimizer ='adam'):
 
-	model, logits = GenreClassifierV2((max_length,), word_to_vec_map, word_to_index, len(df["genres"].unique()))
+	model, logits = GenreClassifierV2((max_length,), word_to_vec_map, word_to_index, len(df["genres"].unique()), dropout_rate = dropout_rate)
 
 	if summary:
 		model.summary()
 
 	class_weights = pd.read_csv('datasets/genreLabels.csv')
 	class_weights = class_weights['weight'].copy().to_dict()
-
-    # your class weights
-	#class_weights = tf.constant([class_weights])
-	# deduce weights for batch samples based on their true label
-	#weights = tf.reduce_sum(class_weights * Y_train_oh, axis=1)
-	# compute your (unweighted) softmax cross entropy loss
-	#unweighted_losses = tf.nn.softmax_cross_entropy_with_logits_v2(Y_train_oh, logits)
-	# apply the weights, relying on broadcasting of the multiplication
-	#weighted_losses = unweighted_losses * weights
-	# reduce the result to get your final loss
-	#loss = tf.reduce_mean(weighted_losses)
-	#loss = unweighted_losses
 	
 	model.compile(loss=loss, optimizer=optimizer, metrics=['accuracy'])
 
-	#earlystop = EarlyStopping(monitor='val_acc', min_delta=0.0001, patience=3, verbose=1, mode='auto')
 	modelcheckVal = ModelCheckpoint('modelsAWS2/allDataDropoutWeighted_validation-weights-improvement-{epoch:02d}-{val_acc:.2f}.h5', monitor='val_acc', period=5, verbose=1, save_best_only=True, mode='max')
-	callbacks_list = [modelcheckVal] #, modelcheckTrain]
+	callbacks_list = [modelcheckVal] 
 
-	history = model.fit(X_train_indices, Y_train_oh, epochs = 50, 
+	history = model.fit(X_train_indices, Y_train_oh, epochs = epochs, 
 		callbacks=callbacks_list, batch_size = batch_size, validation_split = 0.1, shuffle=True, class_weight = class_weights)
 
 	return history, model
 
 
 def trainModel(X_train_indices, Y_train_oh, word_to_vec_map, word_to_index, max_length, summary = False, 
-               dropout_rate = 0.5, batch_size = 32, epochs = 50, loss ='categorical_crossentropy', 
+               dropout_rate = 0.2, batch_size = 32, epochs = epochs, loss ='categorical_crossentropy', 
                optimizer ='adam'):
     
     model, logits = GenreClassifierV2((max_length,), word_to_vec_map, word_to_index, len(df["genres"].unique()))
@@ -304,9 +299,8 @@ def trainModel(X_train_indices, Y_train_oh, word_to_vec_map, word_to_index, max_
         
     model.compile(loss=loss, optimizer=optimizer, metrics=['accuracy'])
     
-    #earlystop = EarlyStopping(monitor='val_acc', min_delta=0.0001, patience=3, verbose=1, mode='auto')
     modelcheckVal = ModelCheckpoint('modelsAWS/allDataDropout_validation-weights-improvement-{epoch:02d}-{val_acc:.2f}.h5', monitor='val_acc', period =5, verbose=1, save_best_only=True, mode='max')
-    callbacks_list = [modelcheckVal] #, modelcheckTrain]
+    callbacks_list = [modelcheckVal]
     
     history = model.fit(X_train_indices, Y_train_oh, epochs = 50, 
                              callbacks=callbacks_list, batch_size = batch_size, validation_split = 0.1, shuffle=True)
@@ -315,58 +309,35 @@ def trainModel(X_train_indices, Y_train_oh, word_to_vec_map, word_to_index, max_
 
 
 
+if __name__ == "__main__":
+   
+	df = pd.read_csv('datasets/preprocessed.csv')
+	df.dropna(inplace = True)
 
-df = pd.read_csv('datasets/preprocessed.csv')
-df.dropna(inplace = True)
+	# obtain the GloVe dataset of dimensionality 100
+	word_to_index, index_to_word, word_to_vec_map = read_glove_vecs_only_alpha('datasets/glove.6B/glove.6B.100d.txt')
 
-# obtain the GloVe dataset of dimensionality 100
-word_to_index, index_to_word, word_to_vec_map = read_glove_vecs_only_alpha('datasets/glove.6B/glove.6B.100d.txt')
+	# determine the maximum length of a movie overview
+	max_sequence_length = df["overview length"].max()
 
-# determine the maximum length of a movie overview
-max_sequence_length = df["overview length"].max()
+	# split the data into training and testing sets
+	X = df['overview'].values
+	y = df['genre label'].values
 
-# split the data into training and testing sets
-X = df['overview'].values
-y = df['genre label'].values
+	# convert the sentences to their respective indices in the word to index dictionnary
+	X_indices = sentences_to_indices(X, word_to_index, max_sequence_length)
 
-#X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
-X_train, y_train = X, y
+	# one-hot encode the labels
+	y_oh = convert_to_one_hot(y, C = len(df["genres"].unique()))
 
-# convert the sentences to their respective indices in the word to index dictionnary
-X_train_indices = sentences_to_indices(X_train, word_to_index, max_sequence_length)
+	# train the model and keep its history
+	history, model = trainModelV2(X_indices, y_oh, word_to_vec_map, word_to_index, max_length = max_sequence_length)
 
-# one-hot encode the labels
-y_train_oh = convert_to_one_hot(y_train, C = len(df["genres"].unique()))
+	# generate a plot of the model's progress over time and save the figure
+	plot_model_history(history, 'graphs/weighted_model_categorialloss_dropout.png')
 
-# train the model and keep its history
-history, model = trainModelV2(X_train_indices, y_train_oh, word_to_vec_map, word_to_index, max_length = max_sequence_length)
+	# train the model and keep its history
+	history, model = trainModel(X_indices, y_oh, word_to_vec_map, word_to_index, max_length = max_sequence_length)
 
-# generate a plot of the model's progress over time and save the figure
-plot_model_history(history, 'graphs/weighted_model_categorialloss_dropout.png')
-
-# evaluate the accuracy of the model on the test set
-'''
-X_test_indices = sentences_to_indices(X_test, word_to_index, max_len = max_sequence_length)
-y_test_oh = convert_to_one_hot(y_test, C = len(df["genres"].unique()))
-loss, acc = model.evaluate(X_test_indices, y_test_oh)
-
-print("Test accuracy = ", acc)
-'''
-
-
-history, model = trainModel(X_train_indices, y_train_oh, word_to_vec_map, word_to_index, max_length = max_sequence_length)
-
-# save the model
-#model.save_weights("models/Epochs50_Adam_CCloss_V2.h5") 
-
-# generate a plot of the model's progress over time and save the figure
-plot_model_history(history, 'graphs/model_categorialloss_dropout.png')
-
-# evaluate the accuracy of the model on the test set
-'''
-X_test_indices = sentences_to_indices(X_test, word_to_index, max_len = max_sequence_length)
-y_test_oh = convert_to_one_hot(y_test, C = len(df["genres"].unique()))
-loss, acc = model.evaluate(X_test_indices, y_test_oh)
-
-print("Test accuracy = ", acc)
-'''
+	# generate a plot of the model's progress over time and save the figure
+	plot_model_history(history, 'graphs/model_categorialloss_dropout.png')

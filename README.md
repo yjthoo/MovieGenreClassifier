@@ -2,7 +2,7 @@
 
 The goal of this project is to determine the genre of a movie based on its title as well as its description/overview (generally up to 140 words). The program is written in Python and enables the classification between the following types of genres:
 
-
+![alt text](images/genreLabelimg.png "Illustration of the different genres considered by the model, their associated label and the weight of each class")
 
 ## Installation
 
@@ -132,7 +132,7 @@ In addition to the libraries listed above, you will need to download the followi
 	where `<predicted genre>` is the genre predicted by the model.
 
 
-## Modifying the program
+## Modifying the program, running tests and training the model
 
 ### Changing the preprocessing of the dataset
 
@@ -171,5 +171,36 @@ If you wish to change the dataset, i.e. use a different one than the `movies_met
 	python preprocessing.py
 	```
 
+### Runing tests to ensure robustness
+
+To run tests, you can simply run the following command within the directory where the `MovieGenreClassifier.py` script is located:
+
+```
+pytest
+``` 
+
+This will search for all scripts starting with `test_` and run all functions within it starting by the same string.
+
 ### Training the model
 
+To train the model currently used by the `MovieGenreClassifier.py` script (see `GenreClassifierV2` in the `trainModel.py` script), you can run the following command from the command prompt:
+
+```
+python trainModel.py
+```
+
+After deciding the number of epochs you desire, the dropout rate etc by modifying the inputs given to the `trainModelV2` funtion within the main:
+
+```
+trainModelV2(X_indices, Y_oh, word_to_vec_map, word_to_index, max_length = max_sequence_length, summary = False, 
+               dropout_rate = 0.2, batch_size = 32, epochs = 50, loss ='categorical_crossentropy', 
+               optimizer ='adam')
+```
+
+### Designing and training a new model
+
+After designing your own model, you can replace the `GenreClassifierV2` function inside the `trainModelV2` function within the `trainModel.py` script with the name of your function inside of which your model is constructed. You can then train your model by running the following command from the command prompt:
+
+```
+python trainModel.py
+```
