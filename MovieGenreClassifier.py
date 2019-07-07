@@ -19,7 +19,6 @@ def predictGenre(overview):
 	word_to_index, index_to_word, word_to_vec_map = read_glove_vecs_only_alpha('datasets/glove.6B/glove.6B.100d.txt')
 
 	# determine the maximum length of a movie overview
-	df['overview length'] = df['overview'].apply(lambda x: len(str(x).split(' ')))
 	max_sequence_length = df["overview length"].max()
 
 	X_test = sentences_to_indices([overview], word_to_index, max_sequence_length)

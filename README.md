@@ -100,21 +100,76 @@ In this section, we will cover how to install [anaconda](https://www.anaconda.co
 
 In addition to the libraries listed above, you will need to download the following datasets:
 
-* The movies_metadata.csv file from the [movies dataset on kaggle](https://www.kaggle.com/rounakbanik/the-movies-dataset#movies_metadata.csv) and put it in the `datasets` folder
+* The `movies_metadata.csv` file from the [movies dataset on kaggle](https://www.kaggle.com/rounakbanik/the-movies-dataset#movies_metadata.csv) and put it in the `datasets` folder
 * [GloVe (Global Vectors for Word Representation) dataset](https://nlp.stanford.edu/projects/glove/): glove.6B.zip and extract its contents inside of the `datasets` folder
 
 
 ## Running the program
 
 1. Open an *Anaconda Prompt* window and activate your virtual environment.
-2. Next, navigate to the directory where the `MovieGenreClassifier.py` script is 
+2. Next, navigate to the directory where the `MovieGenreClassifier.py` script is.
+3. To run the script, you simply have to run the following line:
+	```
+	python MovieGenreClassifier.py --title <title> --description <description>
+	``` 
+
+	where `<title>` is the name of the movie and `<description>` is the overview of the corresponding movie. 
+
+	**Usage example:**
+	```
+	python MovieGenreClassifier.py --title "Othello" --description "The evil Iago pretends to be friend of Othello in order to manipulate him to serve his own end in the film version of this Shakespeare classic."
+	```
+
+	**Output format:**
+	```
+	{
+    	"title": "Othello",
+    	"description": "The evil Iago pretends to be friend of Othello in order to manipulate him to serve his own end in the film version of this Shakespeare classic.",
+    	"genre": <predicted genre>
+	}
+	```
+
+	where `<predicted genre>` is the genre predicted by the model.
+
 
 ## Modifying the program
 
-### Adding data or changing the preprocessing
+### Changing the preprocessing of the dataset
+
+To modify the preprocessing of the dataset, you can either directly modify the `preprocessing.py` script or open the notebook with the same name. To better visualise what is happening during the preprocessing, I would recommend modifying and testing your changes in the notebook.  
 
 To open the notebooks used to preprocess the data and test each stage of the program, you will need to ensure that your virtual environment is active when opening Jupyter Notebook. To do this, open Anaconda Navigator and swtich to the correct environment at the top of the window:
 
 ![alt text](images/anacondaNav.png "Anaconda Navigator environment")
 
+Once you are happy with your changes within your notebook, you can incorporate your functions inside of the `preprocessing.py` script, navigate to the directory where this script is located and run it through the following command in the terminal:
+
+```
+python preprocessing.py
+```
+
+This will regenerate the `genreLabels.csv` and `preprocessed.csv` files used to train the model and generate predictions. 
+
+### Changing dataset
+
+If you wish to change the dataset, i.e. use a different one than the `movies_metadata.csv` file discussed above, you will have to change the `input_file` variable in the main of the `preprocessing.py` script:
+
+**Example:** changing from the `movies_metadata.csv` dataset to a dataset called `example.csv` located in the `datasets` folder
+	
+	*Initial:* 
+		```
+		input_file = 'datasets/movies_metadata.csv'
+		```
+
+	*Final:*
+		```
+		input_file = 'datasets/example.csv'
+		```
+
+**Note:** Don't forget to run the preprocessing script after changing dataset by running the following command in the terminal
+	```
+	python preprocessing.py
+	```
+
 ### Training the model
+
