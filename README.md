@@ -21,6 +21,7 @@ The following lines will show you how to install python as well as the following
 * [Keras](https://keras.io/): Keras is a neural network API that works on top of Tensorflow and enables us to quickly build and test models.  
 * [scikit-learn](https://scikit-learn.org/stable/): scikit-learn is a machine learning library for Python that provide additional tools for data analysis as well as the implementation of machine learning models. 
 * [NLTK](https://www.nltk.org/): The Natural Language Toolkit (NLTK) provides us with some text processing libraries which are used to treat the overview sentences in our dataset. 
+* [pytest](https://docs.pytest.org/en/latest/): pytest allows the user to write tests for their program to ensure robustness. 
 
 In this section, we will cover how to install [anaconda](https://www.anaconda.com/) as this will provide you with the [Jupyter Notebook](https://jupyter.org/) IDE (Integrated Development Environment) that was used to analyse/preprocess the data for this project.
 
@@ -105,7 +106,8 @@ In addition to the libraries listed above, you will need to download the followi
 
 ## Running the program
 
-1. Open an *Anaconda Prompt* window and activate your virtual environment. 
+1. Open an *Anaconda Prompt* window and activate your virtual environment.
+2. Next, navigate to the directory where the `MovieGenreClassifier.py` script is 
 
 ## Modifying the program
 

@@ -21,6 +21,7 @@ def preprocessOverview(text):
 
 
 def preprocessGenres(df, relevant_treshold):
+
     # extract the names of the genres
     df["genres"] = df["genres"].fillna('[]').apply(literal_eval).apply(lambda x: [i["name"] for i in x] if isinstance(x, list) else [])
 
@@ -49,7 +50,7 @@ def preprocessGenres(df, relevant_treshold):
 
 def genresLabel(df):
     
-    # determine the unique genres contained within our dataset
+    # determine the unique genres contained within our dataset and sort them alphabetically
     genres = df["genres"]
     genres = sorted(set(genres))
     
@@ -86,15 +87,19 @@ def preprocessDataset(df, relevant_treshold=1000):
 
 
 def labelFile(df, genresDict):
+
+    # create a dataframe with the mapping from genre to corresponding label
     genreLabel = pd.DataFrame.from_dict(genresDict, orient='index')
     genreLabel.reset_index(level=0, inplace=True)
     genreLabel.columns = ['genre', 'label']
     
+    # determine the number of times each genre is contained within the dataset
     genreCol = df['genres'].tolist()
     fdist1 = FreqDist(genreCol)
     
     class_weights = []
 
+    # determine the weight of each genre class
     for key, value in sorted(fdist1.most_common(50)):
         class_weights.append(value/len(df))
         
@@ -109,6 +114,7 @@ if __name__ == '__main__':
     input_file = 'datasets/movies_metadata.csv'
     print("Pre-processing dataset from " + input_file)
     df = pd.read_csv(input_file)
+
     # Pre-processing dataframe
     df, genresDict = preprocessDataset(df, relevant_treshold=1000)
     save_df_path = 'datasets/preprocessed.csv'

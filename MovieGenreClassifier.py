@@ -4,33 +4,40 @@ import numpy as np
 import sys, getopt
 
 def main(argv):
+
 	inputTitle = ''
 	inputDescription = ''
+	validArguments = ['title=', 'description=']
 
 	try:
-		opts, args = getopt.getopt(argv, '', ['title=', 'description='])
+		# parse command line options
+		opts, args = getopt.getopt(argv, '', validArguments)
 	except getopt.GetoptError:
-		print('MovieGenreClassifier.py --title <title> --description <description>')
+		print('The input should have the following structure: MovieGenreClassifier.py --title <title> --description <description>')
 		sys.exit(2)
 
-	#iterate through the input arguments
+	try:
+		# ensure that there is the correct amount of input arguments
+		assert len(opts) == len(validArguments) and len([option[0] for option in opts if option[0] in ["--title", "--description"]]) == len(validArguments)
+	except AssertionError:
+		raise AssertionError("Invalid argument or arguments! The input should have the following structure: MovieGenreClassifier.py --title <title> --description <description>")
+		sys.exit()
+
+	# iterate through the input arguments
 	for opt, arg in opts:
 
-		if opt == '-h':
-			print('MovieGenreClassifier.py --title <title> --description <description>')
-			sys.exit()
-		elif opt in ["--title", "--description"]:
+		if opt == "--title":
+			inputTitle = arg
+		else:
 
+			# ensure that the description argument is comprised of strings
 			try:
 				assert not arg.isnumeric()
 			except AssertionError:
 				raise AssertionError(str(opt) + " argument needs to be a string")
 				sys.exit()
 
-			if opt == "--title":
-				inputTitle = arg
-			else:
-				inputDescription = arg
+			inputDescription = arg
 
 	movieDic = {}
 	movieDic["title"] = inputTitle

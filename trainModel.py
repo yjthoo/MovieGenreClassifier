@@ -281,7 +281,7 @@ def trainModelV2(X_train_indices, Y_train_oh, word_to_vec_map, word_to_index, ma
 	model.compile(loss=loss, optimizer=optimizer, metrics=['accuracy'])
 
 	#earlystop = EarlyStopping(monitor='val_acc', min_delta=0.0001, patience=3, verbose=1, mode='auto')
-	modelcheckVal = ModelCheckpoint('modelsAWS2/validation-weights-improvement-{epoch:02d}-{val_acc:.2f}.h5', monitor='val_acc', period=5, verbose=1, save_best_only=True, mode='max')
+	modelcheckVal = ModelCheckpoint('modelsAWS2/allDataWeighted_validation-weights-improvement-{epoch:02d}-{val_acc:.2f}.h5', monitor='val_acc', period=5, verbose=1, save_best_only=True, mode='max')
 	callbacks_list = [modelcheckVal] #, modelcheckTrain]
 
 	history = model.fit(X_train_indices, Y_train_oh, epochs = 50, 
@@ -302,7 +302,7 @@ def trainModel(X_train_indices, Y_train_oh, word_to_vec_map, word_to_index, max_
     model.compile(loss=loss, optimizer=optimizer, metrics=['accuracy'])
     
     #earlystop = EarlyStopping(monitor='val_acc', min_delta=0.0001, patience=3, verbose=1, mode='auto')
-    modelcheckVal = ModelCheckpoint('modelsAWS/validation-weights-improvement-{epoch:02d}-{val_acc:.2f}.h5', monitor='val_acc', period =5, verbose=1, save_best_only=True, mode='max')
+    modelcheckVal = ModelCheckpoint('modelsAWS/allData_validation-weights-improvement-{epoch:02d}-{val_acc:.2f}.h5', monitor='val_acc', period =5, verbose=1, save_best_only=True, mode='max')
     callbacks_list = [modelcheckVal] #, modelcheckTrain]
     
     history = model.fit(X_train_indices, Y_train_oh, epochs = 50, 
@@ -327,7 +327,8 @@ max_sequence_length = df["overview length"].max()
 X = df['overview'].values
 y = df['genre label'].values
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
+#X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
+X_train, y_train = X, y
 
 # convert the sentences to their respective indices in the word to index dictionnary
 X_train_indices = sentences_to_indices(X_train, word_to_index, max_sequence_length)
@@ -336,19 +337,21 @@ X_train_indices = sentences_to_indices(X_train, word_to_index, max_sequence_leng
 y_train_oh = convert_to_one_hot(y_train, C = len(df["genres"].unique()))
 
 # train the model and keep its history
-history, model = trainModel(X_train_indices, y_train_oh, word_to_vec_map, word_to_index, max_length = max_sequence_length)
+history, model = trainModelV2(X_train_indices, y_train_oh, word_to_vec_map, word_to_index, max_length = max_sequence_length)
 
 # generate a plot of the model's progress over time and save the figure
-plot_model_history(history, 'graphs/model_categorialloss.png')
+plot_model_history(history, 'graphs/weighted_model_categorialloss.png')
 
 # evaluate the accuracy of the model on the test set
+'''
 X_test_indices = sentences_to_indices(X_test, word_to_index, max_len = max_sequence_length)
 y_test_oh = convert_to_one_hot(y_test, C = len(df["genres"].unique()))
 loss, acc = model.evaluate(X_test_indices, y_test_oh)
 
 print("Test accuracy = ", acc)
-
 '''
+
+
 history, model = trainModel(X_train_indices, y_train_oh, word_to_vec_map, word_to_index, max_length = max_sequence_length)
 
 # save the model
@@ -358,6 +361,7 @@ history, model = trainModel(X_train_indices, y_train_oh, word_to_vec_map, word_t
 plot_model_history(history, 'graphs/model_categorialloss.png')
 
 # evaluate the accuracy of the model on the test set
+'''
 X_test_indices = sentences_to_indices(X_test, word_to_index, max_len = max_sequence_length)
 y_test_oh = convert_to_one_hot(y_test, C = len(df["genres"].unique()))
 loss, acc = model.evaluate(X_test_indices, y_test_oh)
