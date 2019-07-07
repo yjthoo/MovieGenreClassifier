@@ -2,6 +2,35 @@
 
 import numpy as np 
 import sys, getopt
+import tensorflow as tf
+import keras
+from trainModel import read_glove_vecs_only_alpha, sentences_to_indices
+
+def predictGenre(overview):
+
+	model = load_model('.h5')
+
+	df = pd.read_csv('datasets/preprocessed.csv')
+	df.dropna(inplace = True)
+
+	genreLabels = pd.read_csv('datasets/genreLabels.csv')
+
+	# obtain the GloVe dataset of dimensionality 100
+	word_to_index, index_to_word, word_to_vec_map = read_glove_vecs_only_alpha('datasets/glove.6B/glove.6B.100d.txt')
+
+	# determine the maximum length of a movie overview
+	df['overview length'] = df['overview'].apply(lambda x: len(str(x).split(' ')))
+	max_sequence_length = df["overview length"].max()
+
+	X_test = sentences_to_indices([overview], word_to_index, max_sequence_length)
+
+	# predict genre label and map back to genre string
+	prediction = model.predict(X_test)
+	prediction = prediciton.index(1.0)
+	predictedGenre = genreLabels[genreLabels["label"] == prediction]["genre"]
+
+	return predictedGenre
+
 
 def main(argv):
 
@@ -43,6 +72,7 @@ def main(argv):
 	movieDic["title"] = inputTitle
 	movieDic["description"] = inputDescription
 	movieDic["genre"] = "unkown"
+	#movieDic["genre"] = predictGenre(inputDescription)
 	print(movieDic)
 
 if __name__ == "__main__":

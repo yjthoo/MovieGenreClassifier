@@ -77,11 +77,16 @@ def preprocessDataset(df, relevant_treshold=1000):
     # preprocess overview
     df["overview"] = df["overview"].astype(str).apply(lambda x: preprocessOverview(x))
     
+    # determine the length of the movie overview
+    df['overview length'] = df['overview'].apply(lambda x: len(str(x).split(' ')))
+        
     # preprocess genres label
     df = preprocessGenres(df, relevant_treshold)
     
     # give genres a label
     df, genresDict = genresLabel(df)
+    
+    df.dropna(inplace = True)
     
     return df, genresDict
 

@@ -161,7 +161,7 @@ def GenreClassifierV2(input_shape, word_to_vec_map, word_to_index, nbClasses):
     X = LSTM(100, return_sequences = False)(X)
 
     # Add dropout with a probability of 0.5
-    X = Dropout(0.5)(X)
+    X = Dropout(0.2)(X)
     
     # Propagate X through a Dense layer with softmax activation to get back a batch of 23-dimensional vectors.
     X = Dense(nbClasses)(X)
@@ -204,7 +204,7 @@ def GenreClassifier(input_shape, word_to_vec_map, word_to_index, nbClasses):
     X = LSTM(128, return_sequences = True)(embeddings)
     
     # Add dropout with a probability of 0.5
-    X = Dropout(0.5)(X)
+    X = Dropout(0.2)(X)
     
     # Propagate X trough another LSTM layer with 128-dimensional hidden state
     # returned output should be a single hidden state, not a batch of sequences.
