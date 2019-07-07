@@ -85,10 +85,21 @@ def preprocessDataset(df, relevant_treshold=1000):
     return df, genresDict
 
 
-def labelFile(genresDict):
+def labelFile(df, genresDict):
     genreLabel = pd.DataFrame.from_dict(genresDict, orient='index')
     genreLabel.reset_index(level=0, inplace=True)
     genreLabel.columns = ['genre', 'label']
+    
+    genreCol = df['genres'].tolist()
+    fdist1 = FreqDist(genreCol)
+    
+    class_weights = []
+
+    for key, value in sorted(fdist1.most_common(50)):
+        class_weights.append(value/len(df))
+        
+    genreLabel['weight'] = class_weights
+    
     return genreLabel
 
 
@@ -105,7 +116,7 @@ if __name__ == '__main__':
     df.to_csv(save_df_path, index=False)
 
     # Create file for user label number to associated movie
-    genreLabel = labelFile(genresDict)
+    genreLabel = labelFile(df, genresDict)
     save_label_path = 'datasets/genreLabels.csv'
     print("Saving labels at " + save_label_path)
     genreLabel.to_csv(save_label_path, index = False)

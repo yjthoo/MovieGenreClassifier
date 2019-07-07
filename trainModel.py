@@ -282,8 +282,7 @@ def trainModelV2(X_train_indices, Y_train_oh, word_to_vec_map, word_to_index, ma
 
 	#earlystop = EarlyStopping(monitor='val_acc', min_delta=0.0001, patience=3, verbose=1, mode='auto')
 	modelcheckVal = ModelCheckpoint('modelsAWS2/validation-weights-improvement-{epoch:02d}-{val_acc:.2f}.h5', monitor='val_acc', period=5, verbose=1, save_best_only=True, mode='max')
-	modelcheckTrain = ModelCheckpoint('modelsAWS2/train-weights-improvement-{epoch:02d}-{val_acc:.2f}.h5', monitor='acc', period=5, verbose=1, save_best_only=True, mode='max')
-	callbacks_list = [modelcheckVal, modelcheckTrain]
+	callbacks_list = [modelcheckVal] #, modelcheckTrain]
 
 	history = model.fit(X_train_indices, Y_train_oh, epochs = 50, 
 		callbacks=callbacks_list, batch_size = batch_size, validation_split = 0.1, shuffle=True, class_weight = class_weights)
@@ -295,7 +294,7 @@ def trainModel(X_train_indices, Y_train_oh, word_to_vec_map, word_to_index, max_
                dropout_rate = 0.5, batch_size = 32, epochs = 50, loss ='categorical_crossentropy', 
                optimizer ='adam'):
     
-    model = GenreClassifierV2((max_length,), word_to_vec_map, word_to_index, len(df["genres"].unique()))
+    model, logits = GenreClassifierV2((max_length,), word_to_vec_map, word_to_index, len(df["genres"].unique()))
     
     if summary:
         model.summary()
@@ -304,8 +303,7 @@ def trainModel(X_train_indices, Y_train_oh, word_to_vec_map, word_to_index, max_
     
     #earlystop = EarlyStopping(monitor='val_acc', min_delta=0.0001, patience=3, verbose=1, mode='auto')
     modelcheckVal = ModelCheckpoint('modelsAWS/validation-weights-improvement-{epoch:02d}-{val_acc:.2f}.h5', monitor='val_acc', period =5, verbose=1, save_best_only=True, mode='max')
-    modelcheckTrain = ModelCheckpoint('modelsAWS/train-weights-improvement-{epoch:02d}-{val_acc:.2f}.h5', monitor='acc', period=5, verbose=1, save_best_only=True, mode='max')
-    callbacks_list = [modelcheckVal, modelcheckTrain]
+    callbacks_list = [modelcheckVal] #, modelcheckTrain]
     
     history = model.fit(X_train_indices, Y_train_oh, epochs = 50, 
                              callbacks=callbacks_list, batch_size = batch_size, validation_split = 0.1, shuffle=True)
@@ -338,10 +336,10 @@ X_train_indices = sentences_to_indices(X_train, word_to_index, max_sequence_leng
 y_train_oh = convert_to_one_hot(y_train, C = len(df["genres"].unique()))
 
 # train the model and keep its history
-history, model = trainModelV2(X_train_indices, y_train_oh, word_to_vec_map, word_to_index, max_length = max_sequence_length)
+history, model = trainModel(X_train_indices, y_train_oh, word_to_vec_map, word_to_index, max_length = max_sequence_length)
 
 # generate a plot of the model's progress over time and save the figure
-plot_model_history(history, 'graphs/model_weightedcategorialloss.png')
+plot_model_history(history, 'graphs/model_categorialloss.png')
 
 # evaluate the accuracy of the model on the test set
 X_test_indices = sentences_to_indices(X_test, word_to_index, max_len = max_sequence_length)
@@ -350,6 +348,7 @@ loss, acc = model.evaluate(X_test_indices, y_test_oh)
 
 print("Test accuracy = ", acc)
 
+'''
 history, model = trainModel(X_train_indices, y_train_oh, word_to_vec_map, word_to_index, max_length = max_sequence_length)
 
 # save the model
@@ -364,3 +363,4 @@ y_test_oh = convert_to_one_hot(y_test, C = len(df["genres"].unique()))
 loss, acc = model.evaluate(X_test_indices, y_test_oh)
 
 print("Test accuracy = ", acc)
+'''
