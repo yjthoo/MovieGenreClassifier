@@ -6,6 +6,7 @@ from keras.callbacks import EarlyStopping, ModelCheckpoint
 import time
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
+import tensorflow as tf
 
 np.random.seed(0)
 from keras.models import Model
@@ -161,6 +162,8 @@ def GenreClassifierV2(input_shape, word_to_vec_map, word_to_index, nbClasses):
     
     # Propagate X through a Dense layer with softmax activation to get back a batch of 23-dimensional vectors.
     X = Dense(nbClasses)(X)
+
+    logits = X
     
     # Add a softmax activation
     X = Activation('softmax')(X)
@@ -168,7 +171,7 @@ def GenreClassifierV2(input_shape, word_to_vec_map, word_to_index, nbClasses):
     # Create Model instance which converts sentence_indices into X.
     model = Model(inputs=sentence_indices, outputs=X)
         
-    return model
+    return model, logits
 
 
 def GenreClassifier(input_shape, word_to_vec_map, word_to_index, nbClasses):
@@ -225,7 +228,7 @@ def convert_to_one_hot(Y, C):
 
 
 #credits of function to http://parneetk.github.io/blog/neural-networks-in-keras/
-def plot_model_history(model_history):
+def plot_model_history(model_history, fig_name):
     
     plt.figure()
     fig, axs = plt.subplots(1,2,figsize=(15,5))
@@ -247,8 +250,45 @@ def plot_model_history(model_history):
     axs[1].set_xlabel('Epoch')
     axs[1].set_xticks(np.arange(1,len(model_history.history['loss'])+1),len(model_history.history['loss'])/10)
     axs[1].legend(['train', 'val'], loc='best')
-    plt.savefig('graphs/history_early_stopping_21_11_not_preprocessed.png')
+    plt.savefig(fig_name)
     plt.show()
+
+
+def trainModelV2(X_train_indices, Y_train_oh, word_to_vec_map, word_to_index, max_length, summary = False, 
+               dropout_rate = 0.5, batch_size = 32, epochs = 50, loss ='categorical_crossentropy', 
+               optimizer ='adam'):
+
+	model, logits = GenreClassifierV2((max_length,), word_to_vec_map, word_to_index, len(df["genres"].unique()))
+
+	if summary:
+		model.summary()
+
+	class_weights = pd.read_csv('datasets/genreLabels.csv')
+	class_weights = class_weights['weight'].copy().to_dict()
+
+    # your class weights
+	#class_weights = tf.constant([class_weights])
+	# deduce weights for batch samples based on their true label
+	#weights = tf.reduce_sum(class_weights * Y_train_oh, axis=1)
+	# compute your (unweighted) softmax cross entropy loss
+	#unweighted_losses = tf.nn.softmax_cross_entropy_with_logits_v2(Y_train_oh, logits)
+	# apply the weights, relying on broadcasting of the multiplication
+	#weighted_losses = unweighted_losses * weights
+	# reduce the result to get your final loss
+	#loss = tf.reduce_mean(weighted_losses)
+	#loss = unweighted_losses
+	
+	model.compile(loss=loss, optimizer=optimizer, metrics=['accuracy'])
+
+	#earlystop = EarlyStopping(monitor='val_acc', min_delta=0.0001, patience=3, verbose=1, mode='auto')
+	modelcheckVal = ModelCheckpoint('modelsAWS2/validation-weights-improvement-{epoch:02d}-{val_acc:.2f}.h5', monitor='val_acc', period=5, verbose=1, save_best_only=True, mode='max')
+	modelcheckTrain = ModelCheckpoint('modelsAWS2/train-weights-improvement-{epoch:02d}-{val_acc:.2f}.h5', monitor='acc', period=5, verbose=1, save_best_only=True, mode='max')
+	callbacks_list = [modelcheckVal, modelcheckTrain]
+
+	history = model.fit(X_train_indices, Y_train_oh, epochs = 50, 
+		callbacks=callbacks_list, batch_size = batch_size, validation_split = 0.1, shuffle=True, class_weight = class_weights)
+
+	return history, model
 
 
 def trainModel(X_train_indices, Y_train_oh, word_to_vec_map, word_to_index, max_length, summary = False, 
@@ -263,16 +303,13 @@ def trainModel(X_train_indices, Y_train_oh, word_to_vec_map, word_to_index, max_
     model.compile(loss=loss, optimizer=optimizer, metrics=['accuracy'])
     
     #earlystop = EarlyStopping(monitor='val_acc', min_delta=0.0001, patience=3, verbose=1, mode='auto')
-    modelcheckVal = ModelCheckpoint('models/validation-weights-improvement-{epoch:02d}-{val_acc:.2f}.h5', monitor='val_acc', verbose=1, save_best_only=True, mode='max')
-    modelcheckTrain = ModelCheckpoint('models/train-weights-improvement-{epoch:02d}-{val_acc:.2f}.h5', monitor='acc', verbose=1, save_best_only=True, mode='max')
+    modelcheckVal = ModelCheckpoint('modelsAWS/validation-weights-improvement-{epoch:02d}-{val_acc:.2f}.h5', monitor='val_acc', period =5, verbose=1, save_best_only=True, mode='max')
+    modelcheckTrain = ModelCheckpoint('modelsAWS/train-weights-improvement-{epoch:02d}-{val_acc:.2f}.h5', monitor='acc', period=5, verbose=1, save_best_only=True, mode='max')
     callbacks_list = [modelcheckVal, modelcheckTrain]
     
-    start = time.time()
-    history = model.fit(X_train_indices, Y_train_oh, epochs = 30, 
+    history = model.fit(X_train_indices, Y_train_oh, epochs = 50, 
                              callbacks=callbacks_list, batch_size = batch_size, validation_split = 0.1, shuffle=True)
-    end = time.time()
-    print("Model took {} seconds (which is {} minutes or {} hours) to train".format((end - start), (end - start)/60, (end - start)/3600))
-    
+
     return history, model
 
 
@@ -291,6 +328,7 @@ max_sequence_length = df["overview length"].max()
 # split the data into training and testing sets
 X = df['overview'].values
 y = df['genre label'].values
+
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
 
 # convert the sentences to their respective indices in the word to index dictionnary
@@ -300,13 +338,25 @@ X_train_indices = sentences_to_indices(X_train, word_to_index, max_sequence_leng
 y_train_oh = convert_to_one_hot(y_train, C = len(df["genres"].unique()))
 
 # train the model and keep its history
+history, model = trainModelV2(X_train_indices, y_train_oh, word_to_vec_map, word_to_index, max_length = max_sequence_length)
+
+# generate a plot of the model's progress over time and save the figure
+plot_model_history(history, 'graphs/model_weightedcategorialloss.png')
+
+# evaluate the accuracy of the model on the test set
+X_test_indices = sentences_to_indices(X_test, word_to_index, max_len = max_sequence_length)
+y_test_oh = convert_to_one_hot(y_test, C = len(df["genres"].unique()))
+loss, acc = model.evaluate(X_test_indices, y_test_oh)
+
+print("Test accuracy = ", acc)
+
 history, model = trainModel(X_train_indices, y_train_oh, word_to_vec_map, word_to_index, max_length = max_sequence_length)
 
 # save the model
-model.save_weights("models/Epochs50_Adam_CCloss_V2.h5") 
+#model.save_weights("models/Epochs50_Adam_CCloss_V2.h5") 
 
 # generate a plot of the model's progress over time and save the figure
-plot_model_history(history)
+plot_model_history(history, 'graphs/model_categorialloss.png')
 
 # evaluate the accuracy of the model on the test set
 X_test_indices = sentences_to_indices(X_test, word_to_index, max_len = max_sequence_length)

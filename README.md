@@ -1,9 +1,6 @@
 # MovieGenreClassifier
 
-The goal of this project is to determine the genre of a movie based on its title as well as its description/overview (generally up to 140 words). The program is written in Python and the model currently uses the following architecture: 
-
-
-The program then enables the classification between the following 23 types of genres:
+The goal of this project is to determine the genre of a movie based on its title as well as its description/overview (generally up to 140 words). The program is written in Python and enables the classification between the following types of genres:
 
 
 
@@ -18,12 +15,12 @@ git clone https://github.com/yjthoo/MovieGenreClassifier.git
 
 The following lines will show you how to install python as well as the following required libraries:
 
-* [TensorFlow](https://www.tensorflow.org/):
-* [Matplotlib](https://matplotlib.org/): This library is used to generate plots to analyse the performance of the model used to predict the genre of the movie based on its overview. 
-* [pandas](https://pandas.pydata.org/):
-* [Keras](https://keras.io/):
-* [scikit-learn](https://scikit-learn.org/stable/):
-* [NLTK](https://www.nltk.org/):
+* [TensorFlow](https://www.tensorflow.org/): TensorFlow is an open source platform for machine learning containing tools and other resources for the development of ML applications. 
+* [Matplotlib](https://matplotlib.org/): This library is used to generate plots to analyse the performance of the model. 
+* [pandas](https://pandas.pydata.org/): This library provides us with tools to structure and analyse our data before training our model. 
+* [Keras](https://keras.io/): Keras is a neural network API that works on top of Tensorflow and enables us to quickly build and test models.  
+* [scikit-learn](https://scikit-learn.org/stable/): scikit-learn is a machine learning library for Python that provide additional tools for data analysis as well as the implementation of machine learning models. 
+* [NLTK](https://www.nltk.org/): The Natural Language Toolkit (NLTK) provides us with some text processing libraries which are used to treat the overview sentences in our dataset. 
 
 In this section, we will cover how to install [anaconda](https://www.anaconda.com/) as this will provide you with the [Jupyter Notebook](https://jupyter.org/) IDE (Integrated Development Environment) that was used to analyse/preprocess the data for this project.
 
@@ -60,7 +57,7 @@ In this section, we will cover how to install [anaconda](https://www.anaconda.co
 	* [Keras](https://keras.io/#installation)
 	* [scikit-learn](https://scikit-learn.org/stable/install.html)
 
-6. The final stage of the installation guide consists of the installation of NLTK with the following command:
+6. The next stage of the installation guide consists of the installation of NLTK with the following command:
 	```
 	conda install nltk
 	```
@@ -90,6 +87,12 @@ In this section, we will cover how to install [anaconda](https://www.anaconda.co
 		```
 
 	which will stop the Python interpreter. 
+
+7. Finally, we install pytest through the following command:
+
+	```
+	conda install -c anaconda pytest 
+	```
 
 
 ## Datasets
