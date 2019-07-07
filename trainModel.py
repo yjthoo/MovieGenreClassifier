@@ -159,6 +159,9 @@ def GenreClassifierV2(input_shape, word_to_vec_map, word_to_index, nbClasses):
     # Propagate the embeddings through an LSTM layer with 128-dimensional hidden state
     # output is a batch of sequences
     X = LSTM(100, return_sequences = False)(X)
+
+    # Add dropout with a probability of 0.5
+    X = Dropout(0.5)(X)
     
     # Propagate X through a Dense layer with softmax activation to get back a batch of 23-dimensional vectors.
     X = Dense(nbClasses)(X)
@@ -281,7 +284,7 @@ def trainModelV2(X_train_indices, Y_train_oh, word_to_vec_map, word_to_index, ma
 	model.compile(loss=loss, optimizer=optimizer, metrics=['accuracy'])
 
 	#earlystop = EarlyStopping(monitor='val_acc', min_delta=0.0001, patience=3, verbose=1, mode='auto')
-	modelcheckVal = ModelCheckpoint('modelsAWS2/allDataWeighted_validation-weights-improvement-{epoch:02d}-{val_acc:.2f}.h5', monitor='val_acc', period=5, verbose=1, save_best_only=True, mode='max')
+	modelcheckVal = ModelCheckpoint('modelsAWS2/allDataDropoutWeighted_validation-weights-improvement-{epoch:02d}-{val_acc:.2f}.h5', monitor='val_acc', period=5, verbose=1, save_best_only=True, mode='max')
 	callbacks_list = [modelcheckVal] #, modelcheckTrain]
 
 	history = model.fit(X_train_indices, Y_train_oh, epochs = 50, 
@@ -302,7 +305,7 @@ def trainModel(X_train_indices, Y_train_oh, word_to_vec_map, word_to_index, max_
     model.compile(loss=loss, optimizer=optimizer, metrics=['accuracy'])
     
     #earlystop = EarlyStopping(monitor='val_acc', min_delta=0.0001, patience=3, verbose=1, mode='auto')
-    modelcheckVal = ModelCheckpoint('modelsAWS/allData_validation-weights-improvement-{epoch:02d}-{val_acc:.2f}.h5', monitor='val_acc', period =5, verbose=1, save_best_only=True, mode='max')
+    modelcheckVal = ModelCheckpoint('modelsAWS/allDataDropout_validation-weights-improvement-{epoch:02d}-{val_acc:.2f}.h5', monitor='val_acc', period =5, verbose=1, save_best_only=True, mode='max')
     callbacks_list = [modelcheckVal] #, modelcheckTrain]
     
     history = model.fit(X_train_indices, Y_train_oh, epochs = 50, 
@@ -340,7 +343,7 @@ y_train_oh = convert_to_one_hot(y_train, C = len(df["genres"].unique()))
 history, model = trainModelV2(X_train_indices, y_train_oh, word_to_vec_map, word_to_index, max_length = max_sequence_length)
 
 # generate a plot of the model's progress over time and save the figure
-plot_model_history(history, 'graphs/weighted_model_categorialloss.png')
+plot_model_history(history, 'graphs/weighted_model_categorialloss_dropout.png')
 
 # evaluate the accuracy of the model on the test set
 '''
@@ -358,7 +361,7 @@ history, model = trainModel(X_train_indices, y_train_oh, word_to_vec_map, word_t
 #model.save_weights("models/Epochs50_Adam_CCloss_V2.h5") 
 
 # generate a plot of the model's progress over time and save the figure
-plot_model_history(history, 'graphs/model_categorialloss.png')
+plot_model_history(history, 'graphs/model_categorialloss_dropout.png')
 
 # evaluate the accuracy of the model on the test set
 '''
