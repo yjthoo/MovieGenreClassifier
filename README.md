@@ -189,7 +189,7 @@ To train the model currently used by the `MovieGenreClassifier.py` script (see `
 python trainModel.py
 ```
 
-After deciding the number of epochs you desire, the dropout rate etc by modifying the inputs given to the `trainModelV2` funtion within the main:
+after deciding the number of epochs you desire, the dropout rate etc by modifying the inputs given to the `trainModelV2` funtion within the main:
 
 ```
 trainModelV2(X_indices, Y_oh, word_to_vec_map, word_to_index, max_length = max_sequence_length, summary = False, 
@@ -197,10 +197,17 @@ trainModelV2(X_indices, Y_oh, word_to_vec_map, word_to_index, max_length = max_s
                optimizer ='adam')
 ```
 
+as well as changing the name of the model inside of the `ModelCheckpoint` function within `trainModelV2`.
+
+
 ### Designing and training a new model
 
-After designing your own model, you can replace the `GenreClassifierV2` function inside the `trainModelV2` function within the `trainModel.py` script with the name of your function inside of which your model is constructed. You can then train your model by running the following command from the command prompt:
+After designing your own model, you can replace the `GenreClassifierV2` function inside the `trainModelV2` function within the `trainModel.py` script with the name of your function inside of which your model is constructed. 
+
+You can then train your model by running the following command from the command prompt:
 
 ```
 python trainModel.py
 ```
+
+**Note:** You may want to change the name of the saved models by changing the first parameter of the `ModelCheckpoint` function within `trainModelV2`.
