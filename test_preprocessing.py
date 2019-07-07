@@ -2,27 +2,37 @@ import sys
 import pandas as pd
 from pandas.util.testing import assert_frame_equal
 
-from preprocessing import preprocessOverview, preprocessDataset, genresLabel
+from preprocessing import preprocessOverview, preprocessDataset, genresLabel, labelFile
 
 def test_preprocessOverview():
-    test_sentence = " I am doing a Project for MoVie's Genre . . Classification , :D   and it is sunny 3 4 93 here; "
-    expected_result = "project movie genre classification sunny"
-    result = preprocessOverview(test_sentence)
-    assert expected_result == result, "preprocessOverview() outputs unexpected string"
+    testSentence = " I am doing a Project for MoVie's Genre . . Classification , :D   and it is sunny 3 4 93 here; "
+    expectedResult = "project movie genre classification sunny"
+    result = preprocessOverview(testSentence)
+    assert expectedResult == result, "preprocessOverview() outputs unexpected string"
 
 
 def test_preprocessDataset():
-    test_df = pd.read_csv("test_data/test_input_head10.csv")
-    expected_result_df = pd.read_csv("test_data/result_test_thresh3_head10.csv")
+    testDf = pd.read_csv("test_data/test_input_head10.csv")
+    expectedResultDf = pd.read_csv("test_data/result_test_thresh3_head10.csv")
     
-    result_df, result_genresDic = preprocessDataset(test_df, relevant_treshold=3)
-    assert_frame_equal(expected_result_df, result_df)
+    resultDf, resultGenresDic = preprocessDataset(testDf, relevant_treshold=3)
+    assert_frame_equal(expectedResultDf, resultDf)
 
 
 def test_genresLabel():
     df = pd.read_csv("test_data/result_test_thresh3_head10.csv")
-    result_df, result_genresDict = genresLabel(df)
-    expected_result_genresDict = {'Action': 0, 'Adventure': 1, 'Comedy': 2}
+    resultDf, resultGenresDict = genresLabel(df)
+    expectedResultGenresDict = {'Action': 0, 'Adventure': 1, 'Comedy': 2}
     
-    assert_frame_equal(df, result_df)
-    assert result_genresDict == expected_result_genresDict, "test_genresLabel() outputs unexpected dictionnary"
+    assert_frame_equal(df, resultDf)
+    assert resultGenresDict == expectedResultGenresDict, "test_genresLabel() outputs unexpected dictionnary"
+
+
+def test_labelFile():
+    test_df = pd.read_csv("test_data/test_input_head10.csv")
+    expected = {'genre': ['Action', 'Adventure', 'Comedy'], 'label': [0, 1, 2], 'weight': [0.3, 0.2, 0.5]}
+    expectedResultGenreLabel = pd.DataFrame(data=expected)
+    
+    df, genresDict = preprocessDataset(test_df, relevant_treshold=3)
+    genreLabel = labelFile(df, genresDict)
+    assert_frame_equal(expectedResultGenreLabel, genreLabel)
