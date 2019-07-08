@@ -279,7 +279,7 @@ def trainModelV2(X_train_indices, Y_train_oh, word_to_vec_map, word_to_index, ma
 	
 	model.compile(loss=loss, optimizer=optimizer, metrics=['accuracy'])
 
-	modelcheckVal = ModelCheckpoint('modelsAWS2/allDataDropoutWeighted_validation-weights-improvement-{epoch:02d}-{val_acc:.2f}.h5', monitor='val_acc', period=5, verbose=1, save_best_only=True, mode='max')
+	modelcheckVal = ModelCheckpoint('models/validation-weights-improvement-{epoch:02d}-{val_acc:.2f}.h5', monitor='val_acc', period=5, verbose=1, save_best_only=True, mode='max')
 	callbacks_list = [modelcheckVal] 
 
 	history = model.fit(X_train_indices, Y_train_oh, epochs = epochs, 
@@ -299,7 +299,7 @@ def trainModel(X_train_indices, Y_train_oh, word_to_vec_map, word_to_index, max_
         
     model.compile(loss=loss, optimizer=optimizer, metrics=['accuracy'])
     
-    modelcheckVal = ModelCheckpoint('modelsAWS/allDataDropout_validation-weights-improvement-{epoch:02d}-{val_acc:.2f}.h5', monitor='val_acc', period =5, verbose=1, save_best_only=True, mode='max')
+    modelcheckVal = ModelCheckpoint('models/validation-weights-improvement-{epoch:02d}-{val_acc:.2f}.h5', monitor='val_acc', period =5, verbose=1, save_best_only=True, mode='max')
     callbacks_list = [modelcheckVal]
     
     history = model.fit(X_train_indices, Y_train_oh, epochs = 50, 

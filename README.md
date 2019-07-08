@@ -96,15 +96,19 @@ In this section, we will cover how to install [anaconda](https://www.anaconda.co
 	```
 
 
-## Datasets
+## Datasets and pretrained models
 
 In addition to the libraries listed above, you will need to download the following datasets:
 
 * The `movies_metadata.csv` file from the [movies dataset on kaggle](https://www.kaggle.com/rounakbanik/the-movies-dataset#movies_metadata.csv) and put it in the `datasets` folder
 * [GloVe (Global Vectors for Word Representation) dataset](https://nlp.stanford.edu/projects/glove/): glove.6B.zip and extract its contents inside of the `datasets` folder
 
+If you plan to use the model currently used by the program, you will also need to download the model (.h5 file) provided in the following [link](https://drive.google.com/drive/folders/1GqWxgZJjm6PDrXctMsUmvLsmrYOsGWMX?usp=sharing), create a folder called `models` and place the file inside of it.
+
 
 ## Running the program
+
+Please ensure that you have read and performed the steps in the previous section, i.e. downloaded the datasets and have the model inside of the `models` folder. 
 
 1. Open an *Anaconda Prompt* window and activate your virtual environment.
 2. Next, navigate to the directory where the `MovieGenreClassifier.py` script is.
