@@ -113,7 +113,7 @@ In addition to the libraries listed above, you will need to download the followi
 	python MovieGenreClassifier.py --title <title> --description <description>
 	``` 
 
-	where `<title>` is the name of the movie and `<description>` is the overview of the corresponding movie. 
+	where `<title>` is the name of the movie and `<description>` is the overview of the corresponding movie. You can obtain an overview of a movie from sites such as [IMDb](https://www.imdb.com/?ref_=nv_home), etc.
 
 	**Usage example:**
 	```
