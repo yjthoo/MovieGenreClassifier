@@ -133,7 +133,7 @@ In addition to the libraries listed above, you will need to download the followi
 
 	**Notes:** 
 		1. Due to the fact that this program uses TensorFlow and not TensorFlow 2.0, you will most probably receive multiple deprecation warnings in the terminal. For better readability, the program uses a 	clear function to erase these before outputing its prediction. Additionally, it will also output the confidence of its prediction. You can stop these from happening by setting 
-		```python
+		```
 		clearConsole = False, outputConfidence = False
 		```
 		in the last line of code of the `MovieGenreClassifier.py` script.
