@@ -2,13 +2,32 @@
 
 import numpy as np 
 import sys, getopt
+import pandas as pd
 import tensorflow as tf
 import keras
+from keras.models import load_model
 from trainModel import read_glove_vecs_only_alpha, sentences_to_indices
+from preprocessing import preprocessOverview
+
+
+# import only system from os 
+from os import system, name 
+
+# define our clear function, taken from: https://www.geeksforgeeks.org/clear-screen-python/
+def clear(): 
+  
+    # for windows 
+    if name == 'nt': 
+        _ = system('cls') 
+  
+    # for mac and linux(here, os.name is 'posix') 
+    else: 
+        _ = system('clear') 
 
 def predictGenre(overview):
 
-	model = load_model('.h5')
+	# load the model
+	model = load_model('modelsAWS/weighted/allDataDropoutWeighted_validation-weights-improvement-30-0.40.h5')
 
 	df = pd.read_csv('datasets/preprocessed.csv')
 	df.dropna(inplace = True)
@@ -21,17 +40,21 @@ def predictGenre(overview):
 	# determine the maximum length of a movie overview
 	max_sequence_length = df["overview length"].max()
 
-	X_test = sentences_to_indices([overview], word_to_index, max_sequence_length)
+	# preprocess the input and convert to indices
+	testOverview = []
+	testOverview.append(preprocessOverview(overview))
+	overview_indices = sentences_to_indices(np.asarray(testOverview), word_to_index, max_sequence_length)
 
 	# predict genre label and map back to genre string
-	prediction = model.predict(X_test)
-	prediction = prediciton.index(1.0)
-	predictedGenre = genreLabels[genreLabels["label"] == prediction]["genre"]
+	prediction = model.predict(overview_indices)
 
-	return predictedGenre
+	confidence = prediction.max()
+	predictedGenre = genreLabels[genreLabels["label"] == np.argmax(prediction)]["genre"].values[0]
+
+	return predictedGenre, confidence
 
 
-def main(argv):
+def main(argv, clearConsole = True, outputConfidence = False):
 
 	inputTitle = ''
 	inputDescription = ''
@@ -71,8 +94,19 @@ def main(argv):
 	movieDic["title"] = inputTitle
 	movieDic["description"] = inputDescription
 	movieDic["genre"] = "unkown"
-	#movieDic["genre"] = predictGenre(inputDescription)
+	movieDic["genre"], confidence = predictGenre(inputDescription)
+
+	# clear console before printing
+	if clearConsole:
+		clear()
+
 	print(movieDic)
 
+	if outputConfidence:
+		print("\n The model had a confidence of " + str(confidence) + " on this prediciton.")
+
+
+
+
 if __name__ == "__main__":
-   main(sys.argv[1:])
+   main(sys.argv[1:], clearConsole = True, outputConfidence = True)

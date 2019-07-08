@@ -131,6 +131,21 @@ In addition to the libraries listed above, you will need to download the followi
 
 	where `<predicted genre>` is the genre predicted by the model.
 
+	**Notes:** 
+		1. Due to the fact that this program uses TensorFlow and not TensorFlow 2.0, you will most probably receive multiple deprecation warnings in the terminal. For better readability, the program uses a 	clear function to erase these before outputing its prediction. Additionally, it will also output the confidence of its prediction. You can stop these from happening by setting 
+		```python
+		clearConsole = False, outputConfidence = False
+		```
+		in the last line of code of the `MovieGenreClassifier.py` script.
+		2. Due to prevalence of `Drama` genre movies, you may have the impression that the model only outputs this genre. However, a typical example to output another genre is the following:
+
+		```
+		{
+			'title': 'Mamma Mia!', 
+			'description': 'The story of a bride-to-be trying to find her real father told using hit songs by the popular 1970s group ABBA.', 
+			'genre': 'Comedy'
+		}
+		```
 
 ## Modifying the program, running tests and training the model
 
@@ -183,7 +198,11 @@ This will search for all scripts starting with `test_` and run all functions wit
 
 ### Training the model
 
-To train the model currently used by the `MovieGenreClassifier.py` script (see `GenreClassifierV2` in the `trainModel.py` script), you can run the following command from the command prompt:
+The summary of the current model used by the program is the following:
+
+![alt text](images/modelSummary.png "Summary of the model")
+
+To train this model (used by the `MovieGenreClassifier.py` script: see `GenreClassifierV2` in the `trainModel.py` script), you can run the following command from the command prompt:
 
 ```
 python trainModel.py
@@ -210,4 +229,4 @@ You can then train your model by running the following command from the command 
 python trainModel.py
 ```
 
-**Note:** You may want to change the name of the saved models by changing the first parameter of the `ModelCheckpoint` function within `trainModelV2`.
+**Note:** You may want to change the name of the saved models by changing the first parameter of the `ModelCheckpoint` function within `trainModelV2`. Furthermore, you will also need to change the name of the model loaded in the `MovieGenreClassifier.py` script used to generate a prediction.

@@ -289,7 +289,7 @@ def trainModelV2(X_train_indices, Y_train_oh, word_to_vec_map, word_to_index, ma
 
 
 def trainModel(X_train_indices, Y_train_oh, word_to_vec_map, word_to_index, max_length, summary = False, 
-               dropout_rate = 0.2, batch_size = 32, epochs = epochs, loss ='categorical_crossentropy', 
+               dropout_rate = 0.2, batch_size = 32, epochs = 50, loss ='categorical_crossentropy', 
                optimizer ='adam'):
     
     model, logits = GenreClassifierV2((max_length,), word_to_vec_map, word_to_index, len(df["genres"].unique()))
