@@ -202,7 +202,7 @@ as well as changing the name of the model inside of the `ModelCheckpoint` functi
 
 ### Designing and training a new model
 
-After designing your own model, you can replace the `GenreClassifierV2` function inside the `trainModelV2` function within the `trainModel.py` script with the name of your function inside of which your model is constructed. 
+The `GenreClassifierV2` model currently used by this project is not optimal such that you may want to design your own model or find one online such as the approach taken in the [following link](https://www.analyticsvidhya.com/blog/2019/04/predicting-movie-genres-nlp-multi-label-classification/). Once this is done, you can replace the `GenreClassifierV2` function inside the `trainModelV2` function within the `trainModel.py` script with the name of your function inside of which your model is constructed. 
 
 You can then train your model by running the following command from the command prompt:
 
