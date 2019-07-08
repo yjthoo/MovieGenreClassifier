@@ -34,28 +34,30 @@ def read_glove_vecs_only_alpha(glove_file):
     word_to_vec_map -- dictionary mapping words to their GloVe vector representation
     """
 
-    with open(glove_file, 'r',encoding='utf8') as f:
-        words = set()
-        word_to_vec_map = {}
-        for line in f:
-            line = line.strip().split()
-            curr_word = line[0]
-            
-            # only consider words containing alphabetical letters
-            if curr_word.isalpha():
-                words.add(curr_word)
-                word_to_vec_map[curr_word] = np.array(line[1:], dtype=np.float64)
-        
-        i = 1
-        words_to_index = {}
-        index_to_words = {}
-        
-        for w in sorted(words):
-            words_to_index[w] = i
-            index_to_words[i] = w
-            i = i + 1
-            
-    return words_to_index, index_to_words, word_to_vec_map
+	with open(glove_file, 'r',encoding='utf8') as f:
+
+		words = set()
+		word_to_vec_map = {}
+
+		for line in f:
+			line = line.strip().split()
+			curr_word = line[0]
+
+			# only consider words containing alphabetical letters
+			if curr_word.isalpha():
+				words.add(curr_word)
+				word_to_vec_map[curr_word] = np.array(line[1:], dtype=np.float64)
+
+		i = 1
+		words_to_index = {}
+		index_to_words = {}
+
+		for w in sorted(words):
+			words_to_index[w] = i
+			index_to_words[i] = w
+			i = i + 1
+
+	return words_to_index, index_to_words, word_to_vec_map
 
 
 def sentences_to_indices(X, word_to_index, max_len):
@@ -78,7 +80,7 @@ def sentences_to_indices(X, word_to_index, max_len):
     # number of training examples
     m = X.shape[0]                                   
     
-    # Initialize X_indices as a numpy matrix of zeros and the correct shape (≈ 1 line)
+    # Initialize X_indices as a numpy matrix of zeros and the correct shape (~ 1 line)
     X_indices = np.zeros((m, max_len))
     
     # loop over training examples
@@ -253,8 +255,8 @@ def convert_to_one_hot(Y, C):
 
 	"""
 	Converts the labels to one hot encoding
-    
-    Arguments:
+
+	Arguments:
     Y -- labels
     C -- number of classes
 
@@ -262,8 +264,8 @@ def convert_to_one_hot(Y, C):
     Y -- one hot encoded labels 
     """
 
-    Y = np.eye(C)[Y.reshape(-1)]
-    return Y
+	Y = np.eye(C)[Y.reshape(-1)]
+	return Y
 
 
 
@@ -277,29 +279,29 @@ def plot_model_history(model_history, fig_name):
     model_history -- history of the model
     fig_name -- name of the figures to be saved 
     """
-    
-    plt.figure()
-    fig, axs = plt.subplots(1,2,figsize=(15,5))
-    
-    # summarize history for accuracy
-    axs[0].plot(range(1,len(model_history.history['acc'])+1),model_history.history['acc'])
-    axs[0].plot(range(1,len(model_history.history['val_acc'])+1),model_history.history['val_acc'])
-    axs[0].set_title('Model Accuracy')
-    axs[0].set_ylabel('Accuracy')
-    axs[0].set_xlabel('Epoch')
-    axs[0].set_xticks(np.arange(1,len(model_history.history['acc'])+1),len(model_history.history['acc'])/10)
-    axs[0].legend(['train', 'val'], loc='best')
-    
-    # summarize history for loss
-    axs[1].plot(range(1,len(model_history.history['loss'])+1),model_history.history['loss'])
-    axs[1].plot(range(1,len(model_history.history['val_loss'])+1),model_history.history['val_loss'])
-    axs[1].set_title('Model Loss')
-    axs[1].set_ylabel('Loss')
-    axs[1].set_xlabel('Epoch')
-    axs[1].set_xticks(np.arange(1,len(model_history.history['loss'])+1),len(model_history.history['loss'])/10)
-    axs[1].legend(['train', 'val'], loc='best')
-    plt.savefig(fig_name)
-    plt.show()
+
+	plt.figure()
+	fig, axs = plt.subplots(1,2,figsize=(15,5))
+
+	# summarize history for accuracy
+	axs[0].plot(range(1,len(model_history.history['acc'])+1),model_history.history['acc'])
+	axs[0].plot(range(1,len(model_history.history['val_acc'])+1),model_history.history['val_acc'])
+	axs[0].set_title('Model Accuracy')
+	axs[0].set_ylabel('Accuracy')
+	axs[0].set_xlabel('Epoch')
+	axs[0].set_xticks(np.arange(1,len(model_history.history['acc'])+1),len(model_history.history['acc'])/10)
+	axs[0].legend(['train', 'val'], loc='best')
+
+	# summarize history for loss
+	axs[1].plot(range(1,len(model_history.history['loss'])+1),model_history.history['loss'])
+	axs[1].plot(range(1,len(model_history.history['val_loss'])+1),model_history.history['val_loss'])
+	axs[1].set_title('Model Loss')
+	axs[1].set_ylabel('Loss')
+	axs[1].set_xlabel('Epoch')
+	axs[1].set_xticks(np.arange(1,len(model_history.history['loss'])+1),len(model_history.history['loss'])/10)
+	axs[1].legend(['train', 'val'], loc='best')
+	plt.savefig(fig_name)
+	plt.show()
 
 
 def trainModelV2(X_train_indices, Y_train_oh, word_to_vec_map, word_to_index, max_length, summary = False, 
@@ -350,9 +352,9 @@ def trainModel(X_train_indices, Y_train_oh, word_to_vec_map, word_to_index, max_
                optimizer ='adam'):
 
 	"""
-    Function creating, defining the training conditions of the model and fitting it to our data. 
-    
-    Arguments:
+	Function creating, defining the training conditions of the model and fitting it to our data. 
+
+ 	Arguments:
     X_train_indices -- sentences converted to their respective indices in the word to index dictionnary
     Y_train_oh -- one hot encoding of the labels
     word_to_vec_map -- dictionary mapping every word in a vocabulary into its 50-dimensional vector representation
@@ -362,25 +364,25 @@ def trainModel(X_train_indices, Y_train_oh, word_to_vec_map, word_to_index, max_
     Returns:
     history -- history of the model
     model -- a model instance in Keras 
-    """
-    
-    # define model 
-    model, logits = GenreClassifierV2((max_length,), word_to_vec_map, word_to_index, len(df["genres"].unique()))
-    
-    if summary:
-    	# print the summary of the model
-        model.summary()
-        
-    model.compile(loss=loss, optimizer=optimizer, metrics=['accuracy'])
-    
-    # add a checkpoint to check the performance of the model every 5 epochs and save the model if the validation accuracy has improved
-    modelcheckVal = ModelCheckpoint('models/validation-weights-improvement-{epoch:02d}-{val_acc:.2f}.h5', monitor='val_acc', period =5, verbose=1, save_best_only=True, mode='max')
-    callbacks_list = [modelcheckVal]
-    
-    history = model.fit(X_train_indices, Y_train_oh, epochs = 50, 
-                             callbacks=callbacks_list, batch_size = batch_size, validation_split = 0.1, shuffle=True)
+	"""
 
-    return history, model
+	# define model 
+	model, logits = GenreClassifierV2((max_length,), word_to_vec_map, word_to_index, len(df["genres"].unique()))
+
+	if summary:
+		# print the summary of the model
+		model.summary()
+
+	model.compile(loss=loss, optimizer=optimizer, metrics=['accuracy'])
+
+	# add a checkpoint to check the performance of the model every 5 epochs and save the model if the validation accuracy has improved
+	modelcheckVal = ModelCheckpoint('models/validation-weights-improvement-{epoch:02d}-{val_acc:.2f}.h5', monitor='val_acc', period =5, verbose=1, save_best_only=True, mode='max')
+	callbacks_list = [modelcheckVal]
+
+	history = model.fit(X_train_indices, Y_train_oh, epochs = 50, 
+		callbacks=callbacks_list, batch_size = batch_size, validation_split = 0.1, shuffle=True)
+
+	return history, model
 
 
 

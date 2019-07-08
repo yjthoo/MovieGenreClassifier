@@ -14,30 +14,30 @@ from os import system, name
 def clear(): 
 
 	"""
-    Function that clears the command prompt, taken from: https://www.geeksforgeeks.org/clear-screen-python/
-    """
-  
-    # for windows 
-    if name == 'nt': 
-        _ = system('cls') 
-  
-    # for mac and linux(here, os.name is 'posix') 
-    else: 
-        _ = system('clear') 
+	Function that clears the command prompt, taken from: https://www.geeksforgeeks.org/clear-screen-python/
+	"""
+
+	# for windows 
+	if name == 'nt': 
+		_ = system('cls') 
+
+	# for mac and linux(here, os.name is 'posix') 
+	else: 
+		_ = system('clear') 
 
 
 def predictGenre(overview):
 
-    """
-    Function that preprocesses the input (overview of the movie) and predicts the genre
+	"""
+	Function that preprocesses the input (overview of the movie) and predicts the genre
 
-    Arguments:
-    overview -- overview of the movie, i.e. the description provided in the command prompt
+	Arguments:
+	overview -- overview of the movie, i.e. the description provided in the command prompt
 
-    Returns:
-    predictedGenre -- the predicted genre of the movie (string)
-    confidence -- the confidence of the model in its prediction (maximum value of the softmax layer)
-    """
+	Returns:
+	predictedGenre -- the predicted genre of the movie (string)
+	confidence -- the confidence of the model in its prediction (maximum value of the softmax layer)
+	"""
 
 	# load the model
 	model = load_model('models/train-0.56_validation-0.40.h5')
@@ -97,7 +97,7 @@ def main(argv, clearConsole = True, outputConfidence = False):
 			try:
 				assert not arg.isnumeric()
 			except AssertionError:
-				raise AssertionError(str(opt) + " argument needs to be a string")
+				raise AssertionError(str(opt) + " argument needs to be a string of characters, not just numbers")
 				sys.exit()
 
 			inputDescription = arg
