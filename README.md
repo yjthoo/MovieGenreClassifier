@@ -16,12 +16,12 @@ git clone https://github.com/yjthoo/MovieGenreClassifier.git
 The following lines will show you how to install python as well as the following required libraries:
 
 * [TensorFlow](https://www.tensorflow.org/): TensorFlow is an open source platform for machine learning containing tools and other resources for the development of ML applications. 
-* [Matplotlib](https://matplotlib.org/): This library is used to generate plots to analyse the performance of the model. 
+* [Matplotlib](https://matplotlib.org/): This library is used to generate plots to analyse the performance of our model. 
 * [pandas](https://pandas.pydata.org/): This library provides us with tools to structure and analyse our data before training our model. 
-* [Keras](https://keras.io/): Keras is a neural network API that works on top of Tensorflow and enables us to quickly build and test models.  
-* [scikit-learn](https://scikit-learn.org/stable/): scikit-learn is a machine learning library for Python that provide additional tools for data analysis as well as the implementation of machine learning models. 
+* [Keras](https://keras.io/): Keras is a neural network API that works on top of Tensorflow and enables us to quickly build and test models such as the one used in this program.  
+* [scikit-learn](https://scikit-learn.org/stable/): scikit-learn is a machine learning library for Python that provide additional tools for data analysis as well as the implementation of machine learning models. It was used to split the data and test some initial ideas and may be useful to you if you wish to implement your own models. 
 * [NLTK](https://www.nltk.org/): The Natural Language Toolkit (NLTK) provides us with some text processing libraries which are used to treat the overview sentences in our dataset. 
-* [pytest](https://docs.pytest.org/en/latest/): pytest allows the user to write tests for their program to ensure robustness. 
+* [pytest](https://docs.pytest.org/en/latest/): pytest allows the user to write tests for their program to ensure robustness and was used to check the preprocessing stage of the project (see **Runing tests to ensure robustness** subsection below). 
 
 In this section, we will cover how to install [anaconda](https://www.anaconda.com/) as this will provide you with the [Jupyter Notebook](https://jupyter.org/) IDE (Integrated Development Environment) that was used to analyse/preprocess the data for this project.
 
