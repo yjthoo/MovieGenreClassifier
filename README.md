@@ -139,13 +139,13 @@ In addition to the libraries listed above, you will need to download the followi
 		in the last line of code of the `MovieGenreClassifier.py` script.
 		2. Due to prevalence of `Drama` genre movies, you may have the impression that the model only outputs this genre. However, a typical example to output another genre is the following:
 
-		```
-		{
-			'title': 'Mamma Mia!', 
-			'description': 'The story of a bride-to-be trying to find her real father told using hit songs by the popular 1970s group ABBA.', 
-			'genre': 'Comedy'
-		}
-		```
+	```
+	{
+		"title": "Mamma Mia!", 
+		"description": "The story of a bride-to-be trying to find her real father told using hit songs by the popular 1970s group ABBA.", 
+		"genre": "Comedy"
+	}
+	```
 
 ## Modifying the program, running tests and training the model
 
