@@ -27,7 +27,7 @@ def clear():
 def predictGenre(overview):
 
 	# load the model
-	model = load_model('modelsAWS/weighted/allDataDropoutWeighted_validation-weights-improvement-30-0.40.h5')
+	model = load_model('models/train-0.56_validation-0.40.h5')
 
 	df = pd.read_csv('datasets/preprocessed.csv')
 	df.dropna(inplace = True)
