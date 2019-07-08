@@ -20,8 +20,20 @@ np.random.seed(1)
 
 def read_glove_vecs_only_alpha(glove_file):
 
-	# Adapted from Deep Learning Specialization by deeplearning.ai: https://www.coursera.org/specializations/deep-learning?
+	"""
+	Adapted from Deep Learning Specialization by deeplearning.ai: https://www.coursera.org/specializations/deep-learning?
+
+    Obtains the GloVe vectors of the words that only contain alphabetical letters
     
+    Arguments:
+    glove_file -- path to the GloVe dataset
+
+    Returns:
+    word_to_index -- dictionary mapping from words to their indices in the vocabulary
+    index_to_words -- dictionary mapping indices to their corresponding words
+    word_to_vec_map -- dictionary mapping words to their GloVe vector representation
+    """
+
     with open(glove_file, 'r',encoding='utf8') as f:
         words = set()
         word_to_vec_map = {}
@@ -47,8 +59,8 @@ def read_glove_vecs_only_alpha(glove_file):
 
 
 def sentences_to_indices(X, word_to_index, max_len):
-    """
 
+    """
 	Adapted from Deep Learning Specialization by deeplearning.ai: https://www.coursera.org/specializations/deep-learning?  
 
     Converts an array of sentences (strings) into an array of indices corresponding to words in the sentences.
@@ -95,8 +107,8 @@ def sentences_to_indices(X, word_to_index, max_len):
 
 
 def pretrained_embedding_layer(word_to_vec_map, word_to_index):
+
     """
-	
 	Adapted from Deep Learning Specialization by deeplearning.ai: https://www.coursera.org/specializations/deep-learning?
 
     Creates a Keras Embedding() layer and loads in pre-trained GloVe 100-dimensional vectors.
@@ -135,6 +147,7 @@ def pretrained_embedding_layer(word_to_vec_map, word_to_index):
 
 
 def GenreClassifierV2(input_shape, word_to_vec_map, word_to_index, nbClasses, dropout_rate = 0.2):
+
     """
     Function creating the graph of the model
     
@@ -186,7 +199,10 @@ def GenreClassifierV2(input_shape, word_to_vec_map, word_to_index, nbClasses, dr
 
 
 def GenreClassifier(input_shape, word_to_vec_map, word_to_index, nbClasses):
+
     """
+	Adapted from Deep Learning Specialization by deeplearning.ai: https://www.coursera.org/specializations/deep-learning?
+
     Function creating the graph of the model
     
     Arguments:
@@ -234,12 +250,33 @@ def GenreClassifier(input_shape, word_to_vec_map, word_to_index, nbClasses):
 
 
 def convert_to_one_hot(Y, C):
+
+	"""
+	Converts the labels to one hot encoding
+    
+    Arguments:
+    Y -- labels
+    C -- number of classes
+
+    Returns:
+    Y -- one hot encoded labels 
+    """
+
     Y = np.eye(C)[Y.reshape(-1)]
     return Y
 
 
-#credits of function to http://parneetk.github.io/blog/neural-networks-in-keras/
+
 def plot_model_history(model_history, fig_name):
+
+	"""
+	Plots the history of the model, credits of function to:
+	http://parneetk.github.io/blog/neural-networks-in-keras/
+    
+    Arguments:
+    model_history -- history of the model
+    fig_name -- name of the figures to be saved 
+    """
     
     plt.figure()
     fig, axs = plt.subplots(1,2,figsize=(15,5))
@@ -269,16 +306,36 @@ def trainModelV2(X_train_indices, Y_train_oh, word_to_vec_map, word_to_index, ma
                dropout_rate = 0.2, batch_size = 32, epochs = 50, loss ='categorical_crossentropy', 
                optimizer ='adam'):
 
+	"""
+    Function creating, defining the training conditions of the model and fitting it to our data. 
+    Takes into account the weights of the classes.
+    
+    Arguments:
+    X_train_indices -- sentences converted to their respective indices in the word to index dictionnary
+    Y_train_oh -- one hot encoding of the labels
+    word_to_vec_map -- dictionary mapping every word in a vocabulary into its 50-dimensional vector representation
+    word_to_index -- dictionary mapping from words to their indices in the vocabulary (400,001 words)
+    max_length -- maximum length of an overview 
+
+    Returns:
+    history -- history of the model
+    model -- a model instance in Keras 
+    """
+	
+	# define model 
 	model, logits = GenreClassifierV2((max_length,), word_to_vec_map, word_to_index, len(df["genres"].unique()), dropout_rate = dropout_rate)
 
 	if summary:
+		# print the summary of the model
 		model.summary()
 
+	# determine the weight of each class 
 	class_weights = pd.read_csv('datasets/genreLabels.csv')
 	class_weights = class_weights['weight'].copy().to_dict()
 	
 	model.compile(loss=loss, optimizer=optimizer, metrics=['accuracy'])
 
+	# add a checkpoint to check the performance of the model every 5 epochs and save the model if the validation accuracy has improved
 	modelcheckVal = ModelCheckpoint('models/validation-weights-improvement-{epoch:02d}-{val_acc:.2f}.h5', monitor='val_acc', period=5, verbose=1, save_best_only=True, mode='max')
 	callbacks_list = [modelcheckVal] 
 
@@ -291,14 +348,32 @@ def trainModelV2(X_train_indices, Y_train_oh, word_to_vec_map, word_to_index, ma
 def trainModel(X_train_indices, Y_train_oh, word_to_vec_map, word_to_index, max_length, summary = False, 
                dropout_rate = 0.2, batch_size = 32, epochs = 50, loss ='categorical_crossentropy', 
                optimizer ='adam'):
+
+	"""
+    Function creating, defining the training conditions of the model and fitting it to our data. 
     
+    Arguments:
+    X_train_indices -- sentences converted to their respective indices in the word to index dictionnary
+    Y_train_oh -- one hot encoding of the labels
+    word_to_vec_map -- dictionary mapping every word in a vocabulary into its 50-dimensional vector representation
+    word_to_index -- dictionary mapping from words to their indices in the vocabulary (400,001 words)
+    max_length -- maximum length of an overview 
+
+    Returns:
+    history -- history of the model
+    model -- a model instance in Keras 
+    """
+    
+    # define model 
     model, logits = GenreClassifierV2((max_length,), word_to_vec_map, word_to_index, len(df["genres"].unique()))
     
     if summary:
+    	# print the summary of the model
         model.summary()
         
     model.compile(loss=loss, optimizer=optimizer, metrics=['accuracy'])
     
+    # add a checkpoint to check the performance of the model every 5 epochs and save the model if the validation accuracy has improved
     modelcheckVal = ModelCheckpoint('models/validation-weights-improvement-{epoch:02d}-{val_acc:.2f}.h5', monitor='val_acc', period =5, verbose=1, save_best_only=True, mode='max')
     callbacks_list = [modelcheckVal]
     

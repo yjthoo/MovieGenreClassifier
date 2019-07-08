@@ -8,13 +8,14 @@ import keras
 from keras.models import load_model
 from trainModel import read_glove_vecs_only_alpha, sentences_to_indices
 from preprocessing import preprocessOverview
-
-
-# import only system from os 
 from os import system, name 
 
-# define our clear function, taken from: https://www.geeksforgeeks.org/clear-screen-python/
+
 def clear(): 
+
+	"""
+    Function that clears the command prompt, taken from: https://www.geeksforgeeks.org/clear-screen-python/
+    """
   
     # for windows 
     if name == 'nt': 
@@ -24,7 +25,19 @@ def clear():
     else: 
         _ = system('clear') 
 
+
 def predictGenre(overview):
+
+    """
+    Function that preprocesses the input (overview of the movie) and predicts the genre
+
+    Arguments:
+    overview -- overview of the movie, i.e. the description provided in the command prompt
+
+    Returns:
+    predictedGenre -- the predicted genre of the movie (string)
+    confidence -- the confidence of the model in its prediction (maximum value of the softmax layer)
+    """
 
 	# load the model
 	model = load_model('models/train-0.56_validation-0.40.h5')
@@ -47,7 +60,6 @@ def predictGenre(overview):
 
 	# predict genre label and map back to genre string
 	prediction = model.predict(overview_indices)
-
 	confidence = prediction.max()
 	predictedGenre = genreLabels[genreLabels["label"] == np.argmax(prediction)]["genre"].values[0]
 
@@ -90,6 +102,8 @@ def main(argv, clearConsole = True, outputConfidence = False):
 
 			inputDescription = arg
 
+
+	# predict the genre and format the output
 	movieDic = {}
 	movieDic["title"] = inputTitle
 	movieDic["description"] = inputDescription
@@ -102,6 +116,7 @@ def main(argv, clearConsole = True, outputConfidence = False):
 
 	print(movieDic)
 
+	# output the confidence of the model
 	if outputConfidence:
 		print("\n The model had a confidence of " + str(confidence) + " on this prediciton.")
 

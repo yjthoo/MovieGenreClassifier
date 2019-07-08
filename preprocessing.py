@@ -9,6 +9,17 @@ from nltk.tokenize import word_tokenize
 
 
 def preprocessOverview(text):
+
+    """
+    Function that preprocesses sentence by setting to lower case, removing stop words and removing 
+    words that contain characters that are not letters
+    
+    Arguments:
+    text -- overview of the movie 
+
+    Returns:
+    output -- preprocessed overview
+    """
     
     # tokenize text and set to lower case
     tokens = [x.strip().lower() for x in nltk.word_tokenize(text)]
@@ -21,6 +32,20 @@ def preprocessOverview(text):
 
 
 def preprocessGenres(df, relevant_treshold):
+
+    """
+    Function that preprocesses genres of the movie by removing the movies that do not contain a genre
+    and setting only one genre for each movie (usually the first).
+
+    In the case where the first genre does not have many appearances, it finds the next most relevant genre
+
+    Arguments:
+    df -- movies dataframe
+    relevant_treshold -- threshold for the minimum number of appearances a genre must have 
+
+    Returns:
+    df -- movies dataframe to which the preprocessing has been applied
+    """
 
     # extract the names of the genres
     df["genres"] = df["genres"].fillna('[]').apply(literal_eval).apply(lambda x: [i["name"] for i in x] if isinstance(x, list) else [])
@@ -49,6 +74,17 @@ def preprocessGenres(df, relevant_treshold):
 
 
 def genresLabel(df):
+
+    """
+    Function that sets a label to each genre
+
+    Arguments:
+    df -- movies dataframe
+
+    Returns:
+    df -- movies dataframe which a column with the label corresponding to the genre
+    genresDic -- dictionnary mapping each genre to its corresponding label
+    """
     
     # determine the unique genres contained within our dataset and sort them alphabetically
     genres = df["genres"]
@@ -69,6 +105,18 @@ def genresLabel(df):
 
 
 def preprocessDataset(df, relevant_treshold=1000):
+
+    """
+    Function that cleans the initial dataset by removing unncessary columns, calling the functions presented above
+    and removing non valid datapoints
+
+    Arguments:
+    df -- movies dataframe
+
+    Returns:
+    df -- preprocessed dataframe
+    genresDic -- dictionnary mapping each genre to its corresponding label
+    """
     
     # keep only the columns that are relevant to this application
     relCols = ['original_title', 'overview', 'genres']
@@ -80,7 +128,7 @@ def preprocessDataset(df, relevant_treshold=1000):
     # determine the length of the movie overview
     df['overview length'] = df['overview'].apply(lambda x: len(str(x).split(' ')))
         
-    # preprocess genres label
+    # preprocess genres label and keep only the genres that have over 1000 appearances
     df = preprocessGenres(df, relevant_treshold)
     
     # give genres a label
@@ -92,6 +140,17 @@ def preprocessDataset(df, relevant_treshold=1000):
 
 
 def labelFile(df, genresDict):
+
+    """
+    Function that creates a file to map the genre to its corresponding label and determine the class weights
+
+    Arguments:
+    df -- preprocessed movies dataframe
+    genresDict -- dictionnary mapping each genre to its corresponding label
+
+    Returns:
+    genreLabel -- dataframe mapping each genre to its corresponding label and displaying the weight of each class
+    """
 
     # create a dataframe with the mapping from genre to corresponding label
     genreLabel = pd.DataFrame.from_dict(genresDict, orient='index')
@@ -116,17 +175,18 @@ def labelFile(df, genresDict):
 
 if __name__ == '__main__':
 
+    # read data from the input file
     input_file = 'datasets/movies_metadata.csv'
     print("Pre-processing dataset from " + input_file)
-    df = pd.read_csv(input_file)
+    df = pd.read_csv(input_file, low_memory=False)
 
-    # Pre-processing dataframe
+    # Pre-process dataframe and save file 
     df, genresDict = preprocessDataset(df, relevant_treshold=1000)
     save_df_path = 'datasets/preprocessed.csv'
     print("Saving pre-processed data at " + save_df_path)
     df.to_csv(save_df_path, index=False)
 
-    # Create file for user label number to associated movie
+    # Create a file to map the genre to its corresponding label and determine the class weights
     genreLabel = labelFile(df, genresDict)
     save_label_path = 'datasets/genreLabels.csv'
     print("Saving labels at " + save_label_path)
